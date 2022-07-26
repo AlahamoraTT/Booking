@@ -1,0 +1,411 @@
+---
+openapi: 3.0.0
+info:
+  title: Houmwork
+  description: Houmwork for OTUS TTA
+  version: "1"
+servers:
+- url: https://virtserver.swaggerhub.com/tta.tit/Houmwork/1
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/annvy/otus_sample_1/1
+  description: SwaggerHub API Auto Mocking
+paths:
+  /places:
+    get:
+      tags:
+      - Поиск ресторана
+      summary: Просмотр списка ресторанов
+      description: |
+        Получение списка ресторанов с постраничной навигацией. `TODO: добавить query-параметр для сортировки (asc|desc)`
+      operationId: getPlaces
+      parameters:
+      - name: offset
+        in: query
+        description: Номер первого элемента на странице
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 0
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: Количество эолементов на странице
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 5
+          type: integer
+          default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Place'
+        "500":
+          description: Что-то пошло не так...
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/inline_response_500'
+  /places/{id}:
+    get:
+      tags:
+      - Поиск ресторана
+      summary: Получить ресторан по ID
+      description: Получить указанный ресторан со всеми атрибутами.
+      operationId: getPlaceById
+      parameters:
+      - name: id
+        in: path
+        description: Уникальный ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Place'
+        "500":
+          description: Что-то пошло не так...
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /place/table/{placeId}:
+    get:
+      tags:
+      - Свободные столики в ресторане
+      summary: Свободные столики в ресторане
+      description: Найти свободные столики в ресторане
+      operationId: getAvailableTablesByPlaceId
+      parameters:
+      - name: placeId
+        in: path
+        description: Найти и посмотреть свободные столики в ресторане
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 10
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Table'
+        "400":
+          description: Передан неверный идентификатор
+        "404":
+          description: Ресторан не найден
+  /place/table/find:
+    get:
+      tags:
+      - Поиск свободного столика по параметрам
+      summary: Поиск свободного столика по параметрам
+      description: Найти свободный столик по параметрам
+      operationId: findTablesByParams
+      parameters:
+      - name: tags
+        in: query
+        description: Tags to filter by
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: ОК
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Table'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Table'
+        "400":
+          description: Передано некорректное значение
+      security:
+      - petstore_auth:
+        - write:table
+        - read:table
+  /booking:
+    post:
+      tags:
+      - Бронирование столика
+      summary: Бронирование столика
+      description: Забронировать свободный столик.
+      operationId: createBooking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Что-то пошло не так...
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /booking/{phone}:
+    get:
+      tags:
+      - Список моих бронирований
+      summary: Получить список броней пользователя
+      description: Найти мои активные брони
+      operationId: getMyBooking
+      parameters:
+      - name: phone
+        in: path
+        description: Найти и посмотреть свободные столики в ресторане
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingRequest'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BookingRequest'
+        "400":
+          description: Передан неверный идентификатор
+        "404":
+          description: Ресторан не найден
+components:
+  schemas:
+    Place:
+      required:
+      - description
+      - id
+      - image
+      - name
+      - raiting
+      type: object
+      properties:
+        id:
+          minimum: 1
+          type: integer
+          description: ID ресторана
+          format: int64
+          nullable: false
+        name:
+          maxLength: 150
+          minLength: 2
+          type: string
+          description: Название ресторана
+          nullable: false
+        image:
+          maxLength: 500
+          minLength: 10
+          pattern: /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/
+          type: string
+          description: Фото ресторана (URL)
+          nullable: false
+        description:
+          maxLength: 2000
+          minLength: 50
+          type: string
+          description: Описание ресторана
+          nullable: false
+        raiting:
+          type: string
+          description: Рейтинг ресторана
+          nullable: false
+          enum:
+          - ужасно
+          - плохо
+          - нормально
+          - хорошо
+          - супер
+        tables:
+          maxItems: 500
+          minItems: 1
+          type: array
+          description: Список столиков
+          nullable: false
+          items:
+            $ref: '#/components/schemas/Table'
+        Tag:
+          $ref: '#/components/schemas/Place_Tag'
+    Table:
+      required:
+      - availableDateTime
+      - id
+      - isAvailable
+      - name
+      - placeId
+      type: object
+      properties:
+        id:
+          minimum: 1
+          type: integer
+          description: Уникальный ID столика (сквозной идентификатор по всем ресторанам в системе)
+          format: int64
+          nullable: false
+        name:
+          description: Название или номер столика в ресторане
+          nullable: false
+          oneOf:
+          - type: string
+          - type: integer
+        isAvailable:
+          type: boolean
+          description: Доступность столика для бронирования
+          nullable: false
+        placeId:
+          minimum: 1
+          type: integer
+          description: Уникальный ID ресторана
+          format: int64
+          nullable: false
+        availableDateTime:
+          type: string
+          description: Дата и время свободные для бронирования
+          format: date-time
+          nullable: false
+        Tag:
+          $ref: '#/components/schemas/Table_Tag'
+    BookingRequest:
+      required:
+      - dateTime
+      - phone
+      - tableId
+      type: object
+      properties:
+        tableId:
+          minimum: 1
+          type: integer
+          description: Уникальный ID столика
+          format: int64
+          nullable: false
+        dateTime:
+          type: string
+          description: Дата и время бронирования
+          format: date-time
+          nullable: false
+        phone:
+          pattern: ^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$
+          type: string
+          description: Контактный телефон гостя
+          nullable: false
+    ErrorMessage:
+      maxLength: 500
+      minLength: 10
+      type: string
+      description: |
+        Текст сообщения об ошибке `TODO: сделать из строки объект с полями: сообщение на русском, сообщение на английском, уникальный ID ошибки для саппорта`
+      nullable: false
+    ExtendedErrorMessage:
+      description: Текст сообщения об ошибке
+      allOf:
+      - $ref: '#/components/schemas/ErrorMessage'
+      - required:
+        - techInfo
+        - traceID
+        type: object
+        properties:
+          techInfo:
+            type: string
+          traceID:
+            type: string
+    inline_response_500:
+      oneOf:
+      - $ref: '#/components/schemas/ErrorMessage'
+      - $ref: '#/components/schemas/ExtendedErrorMessage'
+    Place_Tag:
+      type: object
+      properties:
+        name:
+          type: string
+        raiting:
+          type: string
+      example: null
+    Table_Tag:
+      type: object
+      properties:
+        placeId:
+          type: integer
+          format: int64
+        isAvailable:
+          type: boolean
+        availableDateTime:
+          type: string
+      example: null
+  parameters:
+    id:
+      name: id
+      in: path
+      description: Уникальный ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+    offsetParam:
+      name: offset
+      in: query
+      description: Номер первого элемента на странице
+      required: false
+      style: form
+      explode: true
+      schema:
+        minimum: 0
+        type: integer
+        default: 0
+    limitParam:
+      name: limit
+      in: query
+      description: Количество эолементов на странице
+      required: false
+      style: form
+      explode: true
+      schema:
+        maximum: 100
+        minimum: 5
+        type: integer
+        default: 20
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://booking.swagger.io/oauth/dialog
+          scopes:
+            write:table: Изменить столики в своем аккаунте
+            read:table: Посмотреть столики
