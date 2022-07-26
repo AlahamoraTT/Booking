@@ -1,0 +1,160 @@
+<div class="main-content">
+  <h2><a name=""></a></h2>
+  <p>This is the  API</p>
+
+  <h2><a name="createBooking"></a>createBooking</h2>
+  <hr>
+  <p></p>
+  <p>Забронировать свободный столик.</p>
+  <h3 class="section">URL</h3>
+  <code>https://virtserver.swaggerhub.com/tta.tit/Houmwork/1/booking</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">body</span>
+      <span class="param-type">BookingRequest(BookingRequest)</span>
+      
+      <p class="param-description"></p>
+	  </li>
+  </ul>
+  <h2><a name="findTablesByParams"></a>findTablesByParams</h2>
+  <hr>
+  <p></p>
+  <p>Найти свободный столик по параметрам</p>
+  <h3 class="section">URL</h3>
+  <code>https://virtserver.swaggerhub.com/tta.tit/Houmwork/1/place/table/find</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="Table"><a href="">List</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      <span class="param-in">Query: </span>
+      
+      
+      
+      <span class="param-name">tags</span>
+      <span class="param-type">List(String)</span>
+      
+      <p class="param-description">Tags to filter by</p>
+	  </li>
+  </ul>
+  <h2><a name="getAvailableTablesByPlaceId"></a>getAvailableTablesByPlaceId</h2>
+  <hr>
+  <p></p>
+  <p>Найти свободные столики в ресторане</p>
+  <h3 class="section">URL</h3>
+  <code>https://virtserver.swaggerhub.com/tta.tit/Houmwork/1/place/table/{placeId}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="Table"><a href="">Table</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">placeId</span>
+      <span class="param-type">Long</span>
+      
+      <p class="param-description">Найти и посмотреть свободные столики в ресторане</p>
+	  </li>
+  </ul>
+  <h2><a name="getMyBooking"></a>getMyBooking</h2>
+  <hr>
+  <p></p>
+  <p>Найти мои активные брони</p>
+  <h3 class="section">URL</h3>
+  <code>https://virtserver.swaggerhub.com/tta.tit/Houmwork/1/booking/{phone}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BookingRequest"><a href="">BookingRequest</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">phone</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">Найти и посмотреть свободные столики в ресторане</p>
+	  </li>
+  </ul>
+  <h2><a name="getPlaceById"></a>getPlaceById</h2>
+  <hr>
+  <p></p>
+  <p>Получить указанный ресторан со всеми атрибутами.</p>
+  <h3 class="section">URL</h3>
+  <code>https://virtserver.swaggerhub.com/tta.tit/Houmwork/1/places/{id}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="Place"><a href="">Place</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">id</span>
+      <span class="param-type">Integer</span>
+      
+      <p class="param-description">Уникальный ID</p>
+	  </li>
+  </ul>
+  <h2><a name="getPlaces"></a>getPlaces</h2>
+  <hr>
+  <p></p>
+  <p>Получение списка ресторанов с постраничной навигацией. &#x60;TODO: добавить query-параметр для сортировки (asc|desc)&#x60; </p>
+  <h3 class="section">URL</h3>
+  <code>https://virtserver.swaggerhub.com/tta.tit/Houmwork/1/places</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="Place"><a href="">List</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      <span class="param-in">Query: </span>
+      
+      
+      
+      <span class="param-name">offset</span>
+      <span class="param-type">Integer</span>
+      
+      <p class="param-description">Номер первого элемента на странице</p>
+	  </li>
+	  <li class="parameter">
+      
+      <span class="param-in">Query: </span>
+      
+      
+      
+      <span class="param-name">limit</span>
+      <span class="param-type">Integer</span>
+      
+      <p class="param-description">Количество эолементов на странице</p>
+	  </li>
+  </ul>
+</div>
